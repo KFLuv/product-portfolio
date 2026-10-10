@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI旅游助手</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AI旅游助手</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                min-height: 100vh;
+                background: linear-gradient(135deg, #6a9eda 0%, #85c4ed 30%, #a3d9c8 100%);
+                background-attachment: fixed;
+                overflow-x: hidden;
+            }
+
+            /* 添加动态背景元素 */
+            .travel-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                pointer-events: none;
+                overflow: hidden;
+            }
+
+            .bg-element {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                animation: float 25s infinite linear;
+                opacity: 0.7;
+            }
+
+            .bg-element:nth-child(1) {
+                width: 120px;
+                height: 120px;
+                top: 15%;
+                left: 10%;
+                background: linear-gradient(45deg, #ffdd94, #ffbb6e);
+                animation-delay: 0s;
+            }
+
+            .bg-element:nth-child(2) {
+                width: 90px;
+                height: 90px;
+                top: 65%;
+                left: 85%;
+                background: linear-gradient(45deg, #91c5ff, #4d8fdc);
+                animation-delay: 5s;
+            }
+
+            .bg-element:nth-child(3) {
+                width: 160px;
+                height: 160px;
+                top: 30%;
+                left: 80%;
+                background: linear-gradient(45deg, #a5e8c9, #5ab6a9);
+                animation-delay: 10s;
+            }
+
+            .bg-element:nth-child(4) {
+                width: 70px;
+                height: 70px;
+                top: 75%;
+                left: 15%;
+                background: linear-gradient(45deg, #ffb6c1, #ff6b87);
+                animation-delay: 15s;
+            }
+
+            .bg-element:nth-child(5) {
+                width: 110px;
+                height: 110px;
+                top: 45%;
+                left: 30%;
+                background: linear-gradient(45deg, #d4a5ff, #a96bfd);
+                animation-delay: 20s;
+            }
+
+            @keyframes float {
+                0% {
+                    transform: translate(0, 0) rotate(0deg);
+                }
+                25% {
+                    transform: translate(40px, -50px) rotate(90deg);
+                }
+                50% {
+                    transform: translate(80px, 0) rotate(180deg);
+                }
+                75% {
+                    transform: translate(40px, 50px) rotate(270deg);
+                }
+                100% {
+                    transform: translate(0, 0) rotate(360deg);
+                }
+            }
+
+            /* 聊天容器样式 */
+            .chat-container {
+                max-width: 1200px;
+                margin: 30px auto;
+                height: calc(100vh - 60px);
+                display: grid;
+                grid-template-columns: 280px 1fr;
+                grid-template-rows: auto 1fr auto;
+                grid-template-areas:
+                "header header"
+                "sidebar main"
+                "sidebar input";
+                background: rgba(255, 255, 255, 0.92);
+                border-radius: 24px;
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+                backdrop-filter: blur(10px);
+                overflow: hidden;
+            }
+
+            .chat-header {
+                grid-area: header;
+                display: flex;
+                align-items: center;
+                padding: 15px 25px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+                background: linear-gradient(90deg, #5ab6d0, #6ba8da);
+                border-top-left-radius: 24px;
+                border-top-right-radius: 24px;
+                justify-content: space-between;
+            }
+
+            .chat-logo {
+                height: 50px;
+                width: auto;
+                border-radius: 50%;
+                padding: 5px;
+                background: white;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .chat-title {
+                font-size: 26px;
+                font-weight: bold;
+                margin: 0 auto 0 15px;
+                color: white;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+                letter-spacing: 0.5px;
+            }
+
+            .current-time {
+                font-size: 16px;
+                color: rgba(255, 255, 255, 0.9);
+                font-weight: 500;
+                margin-right: auto;
+                background: rgba(0, 0, 0, 0.1);
+                padding: 6px 12px;
+                border-radius: 30px;
+            }
+
+            .user-area {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .logout-link, .edit-link {
+                color: white;
+                text-decoration: none;
+                font-size: 15px;
+                padding: 8px 15px;
+                border-radius: 20px;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.15);
+                font-weight: 500;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .edit-link {
+                background: rgba(255, 255, 255, 0.25);
+                color: white;
+            }
+
+            .logout-link:hover, .edit-link:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            .logout-link i, .edit-link i {
+                margin-right: 8px;
+                font-size: 16px;
+            }
+
+            .user-name {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: white;
+                font-size: 16px;
+                font-weight: 500;
+            }
+
+            .user-name i {
+                background: rgba(255, 255, 255, 0.25);
+                padding: 7px;
+                border-radius: 50%;
+                font-size: 14px;
+            }
+
+            /* 侧边栏样式 */
+            .chat-sidebar {
+                grid-area: sidebar;
+                padding: 20px 15px;
+                border-right: 1px solid rgba(0, 0, 0, 0.08);
+                background: rgba(246, 249, 252, 0.8);
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .sidebar-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: #2c3e50;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding-left: 10px;
+            }
+
+            .hot-topic {
+                padding: 16px;
+                background: white;
+                border-radius: 16px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 8px rgba(75, 126, 214, 0.08);
+                border: 2px solid transparent;
+                display: flex;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .hot-topic:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 16px rgba(75, 126, 214, 0.15);
+                border-color: #6ba8da;
+            }
+
+            .icon-wrapper {
+                width: 45px;
+                height: 45px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, #6ba8da, #5ab6d0);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .hot-topic-icon {
+                color: white;
+                font-size: 22px;
+            }
+
+            .hot-topic-text {
+                flex: 1;
+            }
+
+            .hot-topic-title {
+                font-size: 16px;
+                color: #2c3e50;
+                margin-bottom: 6px;
+                font-weight: 600;
+            }
+
+            .hot-topic-desc {
+                font-size: 13.5px;
+                color: #5e7388;
+                line-height: 1.5;
+            }
+
+            /* 聊天消息样式 */
+            .chat-messages {
+                grid-area: main;
+                padding: 25px;
+                overflow-y: auto;
+                background: #f9fbfd;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                background-image:
+                        radial-gradient(#e1ecf7 1px, transparent 1px),
+                        radial-gradient(#e1ecf7 1px, transparent 1px);
+                background-position: 0 0, 20px 20px;
+                background-size: 40px 40px;
+            }
+
+            .chat-messages::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .chat-messages::-webkit-scrollbar-track {
+                background: rgba(200, 220, 240, 0.3);
+                border-radius: 4px;
+            }
+
+            .chat-messages::-webkit-scrollbar-thumb {
+                background: #b7d5eb;
+                border-radius: 4px;
+            }
+
+            .message {
+                display: flex;
+                margin-bottom: 15px;
+                padding: 0 15px;
+                max-width: 90%;
+                align-self: flex-start;
+            }
+
+            .user-message {
+                align-self: flex-end;
+                flex-direction: row-reverse;
+            }
+
+            .message-avatar {
+                width: 42px;
+                height: 42px;
+                margin: 0 12px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #ffdd94, #ffbb6e);
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .ai-message .message-avatar {
+                background: linear-gradient(135deg, #6ba8da, #5ab6d0);
+            }
+
+            .avatar-initial {
+                color: white;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .message-content-wrap {
+                flex: 1;
+                max-width: calc(100% - 80px);
+            }
+
+            .message-name {
+                font-weight: 600;
+                color: #5e7388;
+                margin-bottom: 8px;
+                font-size: 12.5px;
+                padding-left: 10px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .message-name i {
+                font-size: 11px;
+            }
+
+            .message-content {
+                position: relative;
+                padding: 16px 20px;
+                margin: 0;
+                font-size: 15px;
+                line-height: 1.6;
+                word-break: break-word;
+                transition: transform 0.2s;
+                border-radius: 18px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            }
+
+            .user-message .message-content {
+                background: linear-gradient(to right, #ffb257, #ffdd94);
+                border-radius: 18px 4px 18px 18px;
+                color: #5c3a00;
+            }
+
+            .ai-message .message-content {
+                background: linear-gradient(to right, #e0f1ff, #ffffff);
+                border-radius: 4px 18px 18px 18px;
+                color: #2c3e50;
+            }
+
+            .message-content::after {
+                content: "";
+                position: absolute;
+                bottom: -6px;
+                width: 12px;
+                height: 12px;
+                background: inherit;
+                clip-path: polygon(0 0, 100% 0, 100% 100%);
+                opacity: 0.7;
+            }
+
+            .user-message .message-content::after {
+                right: 10px;
+                transform: rotate(-45deg);
+            }
+
+            .ai-message .message-content::after {
+                left: 10px;
+                transform: rotate(135deg);
+            }
+
+            .message-content p {
+                margin-bottom: 8px;
+            }
+
+            .message-content p:last-child {
+                margin-bottom: 0;
+            }
+
+            .message-content ul {
+                margin: 12px 0 0 0;
+                padding-left: 20px;
+            }
+
+            .message-content li {
+                margin: 10px 0;
+                padding-left: 10px;
+                position: relative;
+            }
+
+            .message-content li::before {
+                content: "•";
+                position: absolute;
+                left: -4px;
+                color: #5ab6d0;
+                font-size: 20px;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px) scale(0.98);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            .message {
+                animation: fadeIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            }
+
+            .message:hover .message-content {
+                transform: translateY(-3px);
+            }
+
+            /* 输入区域样式 */
+            .chat-input-container {
+                grid-area: input;
+                padding: 18px 25px;
+                background: #ffffff;
+                border-top: 1px solid rgba(0, 0, 0, 0.08);
+                display: flex;
+                gap: 15px;
+                align-items: flex-end;
+            }
+
+            .chat-input {
+                flex: 1;
+                padding: 16px 18px;
+                border: 1px solid #d7e5f0;
+                border-radius: 16px;
+                resize: vertical;
+                min-height: 50px;
+                max-height: 200px;
+                font-size: 15.5px;
+                background: rgba(248, 251, 255, 0.8);
+                color: #2c3e50;
+                transition: all 0.3s;
+                box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
+                line-height: 1.5;
+            }
+
+            .chat-input::placeholder {
+                color: #9db4cc;
+            }
+
+            .chat-input:focus {
+                outline: none;
+                border-color: #5ab6d0;
+                box-shadow: 0 0 0 4px rgba(90, 182, 208, 0.15);
+                background: white;
+            }
+
+            .send-button {
+                padding: 0 28px;
+                height: 50px;
+                background: linear-gradient(135deg, #ffbb6e, #ff9c43);
+                color: white;
+                border: none;
+                border-radius: 16px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 600;
+                flex-shrink: 0;
+                transition: all 0.3s;
+                box-shadow: 0 5px 15px rgba(255, 156, 67, 0.3);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .send-button i {
+                font-size: 20px;
+            }
+
+            .send-button:hover {
+                background: linear-gradient(135deg, #ffaa5c, #ff8a2a);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(255, 156, 67, 0.4);
+            }
+
+            /* 模态框样式 */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-content {
+                background-color: #ffffff;
+                padding: 30px;
+                border: 1px solid #e0e0e0;
+                width: 90%;
+                max-width: 480px;
+                border-radius: 24px;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+                position: relative;
+                animation: modalFadeIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            }
+
+            @keyframes modalFadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .close {
+                position: absolute;
+                top: 22px;
+                right: 25px;
+                color: #9db4cc;
+                font-size: 30px;
+                font-weight: normal;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .close:hover {
+                color: #ff6b6b;
+                transform: rotate(90deg);
+            }
+
+            .modal-header {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            .modal-title {
+                font-size: 26px;
+                color: #2c3e50;
+                margin-bottom: 8px;
+                font-weight: 700;
+                background: linear-gradient(to right, #5ab6d0, #6ba8da);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
+
+            .modal-subtitle {
+                color: #7a8ea3;
+                font-size: 16px;
+                line-height: 1.6;
+                max-width: 80%;
+                margin: 0 auto;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+                position: relative;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #5e7388;
+                font-size: 15px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .form-group label i {
+                color: #5ab6d0;
+                width: 20px;
+                text-align: center;
+            }
+
+            .form-control {
+                width: 100%;
+                padding: 15px;
+                border: 1px solid #d7e5f0;
+                border-radius: 12px;
+                box-sizing: border-box;
+                font-size: 15px;
+                transition: all 0.3s;
+                background: rgba(248, 251, 255, 0.5);
+                color: #2c3e50;
+            }
+
+            .form-control:focus {
+                outline: none;
+                border-color: #5ab6d0;
+                box-shadow: 0 0 0 4px rgba(90, 182, 208, 0.15);
+                background: white;
+            }
+
+            .error-message {
+                color: #ff6b6b;
+                font-size: 13.5px;
+                margin-top: 6px;
+                display: none;
+                padding-left: 28px;
+                font-weight: 500;
+            }
+
+            .save-button {
+                background: linear-gradient(135deg, #6ba8da, #5ab6d0);
+                color: white;
+                padding: 16px 20px;
+                border: none;
+                border-radius: 14px;
+                cursor: pointer;
+                width: 100%;
+                font-size: 16px;
+                font-weight: 600;
+                transition: all 0.3s;
+                margin-top: 10px;
+                box-shadow: 0 7px 20px rgba(91, 140, 214, 0.35);
+                letter-spacing: 0.5px;
+            }
+
+            .save-button:hover {
+                background: linear-gradient(135deg, #5da0d5, #4aacbf);
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(91, 140, 214, 0.45);
+            }
+
+            .password-toggle {
+                position: absolute;
+                right: 15px;
+                top: 46px;
+                cursor: pointer;
+                color: #9db4cc;
+                font-size: 15px;
+                transition: all 0.3s;
+                padding: 5px;
+            }
+
+            .password-toggle:hover {
+                color: #5ab6d0;
+            }
+
+            .security-info {
+                margin-top: 25px;
+                padding: 18px;
+                background-color: #f8fbfe;
+                border-radius: 16px;
+                border-left: 4px solid #ffbb6e;
+            }
+
+            .security-title {
+                font-weight: 700;
+                margin-bottom: 10px;
+                color: #5e7388;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .security-content {
+                font-size: 14px;
+                color: #7a8ea3;
+                line-height: 1.6;
+                padding-left: 5px;
+            }
+
+            .security-content i {
+                color: #ffbb6e;
+                margin-right: 8px;
+            }
+
+            /* 响应式设计 */
+            @media (max-width: 900px) {
+                .chat-container {
+                    grid-template-columns: 1fr;
+                    grid-template-areas:
+                    "header"
+                    "main"
+                    "input";
+                    height: 100vh;
+                    margin: 0;
+                    border-radius: 0;
+                }
+
+                .chat-sidebar {
+                    display: none;
+                }
+
+                .chat-header {
+                    border-radius: 0;
+                }
+            }
+
+            @media (max-width: 600px) {
+                .chat-input-container {
+                    padding: 15px;
+                    gap: 12px;
+                }
+
+                .chat-input {
+                    padding: 14px;
+                    font-size: 15px;
+                    min-height: 45px;
+                }
+
+                .send-button {
+                    height: 45px;
+                    padding: 0 20px;
+                    font-size: 15px;
+                }
+
+                .logout-link span, .edit-link span {
+                    display: none;
+                }
+
+                .edit-link i, .logout-link i {
+                    margin: 0;
+                    font-size: 19px;
+                }
+
+                .user-name span {
+                    max-width: 100px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+        </style>
+</head>
+<body>
+<!-- 动态背景元素 -->
+<div class="travel-bg">
+    <div class="bg-element"></div>
+    <div class="bg-element"></div>
+    <div class="bg-element"></div>
+    <div class="bg-element"></div>
+    <div class="bg-element"></div>
+</div>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <img src="gdlg.jpg" alt="gdlg Logo" class="chat-logo">
+        <span class="chat-title">AI旅游助手
+            <span class="myname" id="myname">旅行助手</span>
+        </span>
+        <span id="currentTime"></span>
+        <a href="#" class="edit-link" id="editProfileBtn">编辑信息</a>
+        <a href="login.html" class="logout-link">退出</a>
+    </div>
+    <div class="chat-sidebar">
+        <div class="sidebar-title">
+            <i class="fas fa-fire" style="color: #ff9c43;"></i> 热门旅行地推荐
+        </div>
+        <div class="hot-topic">
+            <div class="icon-wrapper">
+                <i class="fas fa-mountain hot-topic-icon"></i>
+            </div>
+            <div class="hot-topic-text">
+                <div class="hot-topic-title">山水自然</div>
+                <div class="hot-topic-desc">探索张家界、黄山、九寨沟等绝美自然风光</div>
+            </div>
+        </div>
+        <div class="hot-topic">
+            <div class="icon-wrapper">
+                <i class="fas fa-umbrella-beach hot-topic-icon"></i>
+            </div>
+            <div class="hot-topic-text">
+                <div class="hot-topic-title">滨海度假</div>
+                <div class="hot-topic-desc">三亚、厦门、青岛等阳光沙滩海滨城市</div>
+            </div>
+        </div>
+        <div class="hot-topic">
+            <div class="icon-wrapper">
+                <i class="fas fa-landmark hot-topic-icon"></i>
+            </div>
+            <div class="hot-topic-text">
+                <div class="hot-topic-title">历史文化</div>
+                <div class="hot-topic-desc">故宫、兵马俑、丽江古城等历史文化遗址</div>
+            </div>
+        </div>
+        <div class="hot-topic">
+            <div class="icon-wrapper">
+                <i class="fas fa-city hot-topic-icon"></i>
+            </div>
+            <div class="hot-topic-text">
+                <div class="hot-topic-title">都市旅行</div>
+                <div class="hot-topic-desc">上海、香港、成都等现代化都市探索</div>
+            </div>
+        </div>
+        <div class="hot-topic">
+            <div class="icon-wrapper">
+                <i class="fas fa-route hot-topic-icon"></i>
+            </div>
+            <div class="hot-topic-text">
+                <div class="hot-topic-title">主题线路</div>
+                <div class="hot-topic-desc">美食之旅、摄影路线、自驾游线路推荐</div>
+            </div>
+        </div>
+        <div class="hot-topic">
+            <div class="icon-wrapper">
+                <i class="fas fa-globe-asia hot-topic-icon"></i>
+            </div>
+            <div class="hot-topic-text">
+                <div class="hot-topic-title">海外旅行</div>
+                <div class="hot-topic-desc">日本樱花、东南亚海岛、欧洲历史名城</div>
+            </div>
+        </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="message ai-message">
+            <div class="message-avatar">
+                <img src="gdlg.jpg" alt="AI" style="width: 100%; height: 100%; border-radius: 50%;">
+            </div>
+            <div class="message-content-wrap">
+                <div class="message-name">
+                    <i class="fas fa-robot" style="color: #5ab6d0;"></i>
+                    旅行助手 - 行程规划
+                </div>
+                <div class="message-content">
+                    <p>您好！我是您的旅行AI助手，随时为您提供旅行建议和规划。</p>
+                    <p style="margin-top: 8px;">我可以帮您：</p>
+                    <ul style="margin: 8px 0 0 20px;">
+                        <li>推荐旅行目的地和路线</li>
+                        <li>规划个性化行程安排</li>
+                        <li>提供旅行贴士和注意事项</li>
+                        <li>推荐当地美食和特色活动</li>
+                        <li>定制主题旅行方案（如亲子游、蜜月旅行）</li>
+                    </ul>
+                    <p style="margin-top: 12px;">告诉我想去哪里或哪种类型的旅行，我将为您创建完美方案！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form class="chat-input-container" id="chatForm">
+        <textarea class="chat-input" placeholder="您想去哪里旅行？按回车发送..." id="messageInput"></textarea>
+        <button type="submit" class="send-button"><i class="fas fa-paper-plane"></i>发送</button>
+    </form>
+</div>
+
+<!-- 编辑信息模态框 -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-header">
+            <h2 class="modal-title">编辑个人信息</h2>
+            <p class="modal-subtitle">更新您的账户安全信息和旅行偏好设置</p>
+        </div>
+        <form id="editForm">
+            <div class="form-group">
+                <label for="currentPassword"><i class="fas fa-lock"></i> 当前密码</label>
+                <input type="password" id="currentPassword" name="currentPassword" class="form-control" placeholder="请输入当前密码">
+                <span class="password-toggle" id="toggleCurrentPassword"><i class="fas fa-eye"></i></span>
+                <div class="error-message" id="currentPasswordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="newPassword"><i class="fas fa-key"></i> 新密码</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="8位以上，包含字母和数字">
+                <span class="password-toggle" id="toggleNewPassword"><i class="fas fa-eye"></i></span>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword"><i class="fas fa-key"></i> 确认新密码</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="请再次输入新密码">
+                <span class="password-toggle" id="toggleConfirmPassword"><i class="fas fa-eye"></i></span>
+                <div class="error-message" id="confirmPasswordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="newEmail"><i class="fas fa-envelope"></i> 新邮箱</label>
+                <input type="email" id="newEmail" name="newEmail" class="form-control" placeholder="请输入新的邮箱地址">
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <button type="submit" class="save-button">保存更改</button>
+        </form>
+
+        <div class="security-info">
+            <div class="security-title"><i class="fas fa-shield-alt"></i> 安全提示</div>
+            <div class="security-content">
+                <i class="fas fa-circle"></i> 请使用强密码，包含字母、数字和特殊字符<br>
+                <i class="fas fa-circle"></i> 修改密码后，所有设备都需要重新登录<br>
+                <i class="fas fa-circle"></i> 确保邮箱地址有效以便接收旅行更新和安全通知
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 获取DOM元素
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const messageInput = document.getElementById('messageInput');
+    const currentTimeElement = document.getElementById('currentTime');
+    const editModal = document.getElementById('editModal');
+    const closeModal = document.querySelector('.close');
+    const editForm = document.getElementById('editForm');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+
+    // 显示当前日期和时间
+    function updateCurrentTime() {
+        const now = new Date();
+        const dateOptions = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        };
+        const dateStr = now.toLocaleDateString('zh-CN', dateOptions);
+        currentTimeElement.textContent = dateStr;
+    }
+
+    // 初始调用和定时更新
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+
+    // 编辑信息模态框操作
+    editProfileBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        editModal.style.display = 'block';
+        // 清空错误信息
+        document.getElementById('currentPasswordError').style.display = 'none';
+        document.getElementById('passwordError').style.display = 'none';
+        document.getElementById('confirmPasswordError').style.display = 'none';
+        document.getElementById('emailError').style.display = 'none';
+    });
+
+    closeModal.addEventListener('click', function() {
+        editModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(e) {
+        if (e.target === editModal) {
+            editModal.style.display = 'none';
+        }
+    });
+
+    // 密码显示/隐藏功能
+    function setupPasswordToggle(passwordInputId, toggleButtonId) {
+        const passwordInput = document.getElementById(passwordInputId);
+        const toggleButton = document.getElementById(toggleButtonId);
+
+        toggleButton.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passwordInput.type = 'password';
+                toggleButton.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+    }
+
+    // 为所有密码输入框设置切换功能
+    setupPasswordToggle('currentPassword', 'toggleCurrentPassword');
+    setupPasswordToggle('newPassword', 'toggleNewPassword');
+    setupPasswordToggle('confirmPassword', 'toggleConfirmPassword');
+
+    // 表单验证逻辑
+    editForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // 获取表单数据（使用 FormData）
+        const formData = new FormData(editForm);
+
+        // 添加用户名到表单数据（后端需要）
+        const username = document.getElementById('myname').innerText;
+        formData.append('username', username);
+
+        try {
+            // 显示加载状态
+            const saveButton = editForm.querySelector('.save-button');
+            const originalText = saveButton.textContent;
+            saveButton.textContent = '更新中...';
+            saveButton.disabled = true;
+
+            // 发送请求
+            const response = await fetch('http://localhost:8078/chat/updateUserInfo', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP错误! 状态码: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                saveButton.textContent = '✓ 更新成功';
+                saveButton.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+
+                setTimeout(() => {
+                    editModal.style.display = 'none';
+                    saveButton.textContent = originalText;
+                    saveButton.style.background = 'linear-gradient(135deg, #6ba8da, #5ab6d0)';
+                    saveButton.disabled = false;
+                    editForm.reset();
+                    // 恢复密码切换图标
+                    document.querySelectorAll('.password-toggle').forEach(btn => {
+                        btn.innerHTML = '<i class="fas fa-eye"></i>';
+                    });
+                    document.querySelectorAll('input[type="password"]').forEach(input => {
+                        input.type = 'password';
+                    });
+                    alert('用户信息更新成功！');
+                }, 2000);
+            } else {
+                throw new Error(result.message || '更新失败');
+            }
+        } catch (error) {
+            console.error('更新失败:', error);
+            alert(`操作失败: ${error.message}`);
+
+            const saveButton = editForm.querySelector('.save-button');
+            saveButton.textContent = '保存更改';
+            saveButton.disabled = false;
+        }
+    });
+
+    // 添加404错误调试方法
+    function checkEndpoint() {
+        fetch(window.location.origin + '/updateUserInfo', { method: 'HEAD' })
+            .then(response => console.log('端点状态:', response.status))
+            .catch(err => console.error('端点不可用:', err));
+    }
+    window.addEventListener('load', checkEndpoint);
+
+    // 定义消息添加到聊天窗口的方法
+    function addMessage(content, isUser = true) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+        messageDiv.innerHTML = `
+                <div class="message-avatar">
+                ${isUser ?
+            '<img src="ybq.jpg" alt="用户" style="width: 100%; height: 100%; border-radius: 50%;">' :
+            '<img src="gdlg.jpg" alt="AI" style="width: 100%;height: 100%; border-radius: 50%;">'
+        }
+                </div>
+                <div class="message-content-wrap">
+                    <div class="message-name">
+                        <i class="${isUser ? 'fas fa-user' : 'fas fa-robot'}" style="color: ${isUser ? '#ffbb6e' : '#5ab6d0'};"></i>
+                        ${isUser ? document.getElementById('myname').innerText : '旅行助手 - 行程规划'}
+                    </div>
+                    <div class="message-content">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // 监听表单的提交事件
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+        if (!message) return;
+        addMessage(message, true);
+        messageInput.value = '';
+
+        try {
+            // 显示加载状态
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'message ai-message';
+            loadingMessage.innerHTML = `
+                    <div class="message-avatar">
+                        <img src="gdlg.jpg" alt="AI" style="width: 100%; height: 100%; border-radius: 50%;">
+                    </div>
+                    <div class="message-content-wrap">
+                        <div class="message-name">
+                            <i class="fas fa-robot" style="color: #5ab6d0;"></i>
+                            旅行助手 - 行程规划
+                        </div>
+                        <div class="message-content">
+                            <p><i class="fas fa-spinner fa-spin"></i> 正在规划您的旅程...</p>
+                            <p>请稍等片刻，正在为您查询最佳旅行方案</p>
+                        </div>
+                    </div>
+                `;
+            chatMessages.appendChild(loadingMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 发起POST请求（纯文本）
+            const response = await fetch('http://localhost:8078/chat/Aichat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: message
+            });
+
+            if (!response.ok) {
+                throw new Error('网络请求失败');
+            }
+
+            const aiResponse = await response.text();
+
+            // 移除加载消息
+            chatMessages.removeChild(loadingMessage);
+
+            // 添加AI回复
+            addMessage(aiResponse, false);
+        } catch (error) {
+            console.error('请求失败:', error);
+            // 移除加载消息（如果存在）
+            if (loadingMessage && loadingMessage.parentNode === chatMessages) {
+                chatMessages.removeChild(loadingMessage);
+            }
+            // 显示错误消息
+            addMessage('抱歉，查询时遇到问题。请检查网络连接后重试。', false);
+        }
+    });
+
+    // 文档加载完成后显示个人基本信息
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log("DOM 加载完成！");
+        // 获取当前用户名（直接从会话中获取，无需AJAX）
+        const username = sessionStorage.getItem('username') || localStorage.getItem('username') || '旅行助手';
+
+        // 如果已有用户名则直接显示
+        if(username) {
+            document.getElementById("myname").innerText = username;
+            return;
+        }
+
+        // 无用户信息时从后端获取
+        fetch('http://localhost:8078/chat/myinfo', {
+            method: 'POST',
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById("myname").innerText = data.name;
+                // 存储到sessionStorage
+                sessionStorage.setItem('username', data.name);
+            })
+            .catch(error => {
+                console.error('获取用户信息失败:', error);
+            });
+    });
+</script>
+</body>
+</html>

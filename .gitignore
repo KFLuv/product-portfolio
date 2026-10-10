@@ -1,0 +1,10 @@
+# 生成脚本与临时文件
+mkpdf.py
+*.log
+*_scan.txt
+_thumbs/
+.DS_Store
+Thumbs.db
+
+# 本地绝对路径不宜公开
+*.local.md
