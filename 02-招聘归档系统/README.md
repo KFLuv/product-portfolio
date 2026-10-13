@@ -33,9 +33,9 @@
 
 | 指标 | 数量 |
 |---|---|
-| 后端 | **6,581 行 / 40+ 类**（Spring Boot + JPA） |
+| 后端 | **6,405 行 / 73 个类**（Spring Boot + JPA） |
 | 前端 | **12 个 Vue 3 页面**（Element Plus） |
-| 数据表 | 9 张 |
+| 数据表 | 15 张（SQL 脚本里的建表语句数，含 `recruit_plan` 与 `recruitment_plan` 两组重复表） |
 | 部署方式 | 3 种（纯 Docker / 打包版 / 开发模式） |
 
 ---
