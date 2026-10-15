@@ -36,7 +36,7 @@
 |---|---|
 | 后端 | **6,405 行 / 73 个类**（Spring Boot + JPA） |
 | 前端 | **12 个 Vue 3 页面**（Element Plus） |
-| 数据表 | 15 张（SQL 脚本里的建表语句数，含 `recruit_plan` 与 `recruitment_plan` 两组重复表） |
+| 数据表 | 16 张（JPA 实体 16 个；`database/init.sql` 里有 9 张建表语句，其余由 `ddl-auto=update` 自动建） |
 | 部署方式 | 3 种（纯 Docker / 打包版 / 开发模式） |
 
 ---
