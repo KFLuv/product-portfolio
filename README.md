@@ -31,9 +31,9 @@
 
 | 项目 | 一句话 | 我的角色 | 源码 |
 |---|---|---|---|
-| **FaultDetect** | 现场排障 AI 诊断系统：输入故障 URL，自动跑完 7 步排障 SOP，输出可直接汇报的诊断报告 | 产品设计 · 开发 · 评测 | [fault-detect-system](https://github.com/KFLuv/fault-detect-system) |
+| **FaultDetect** | 现场排障 AI 诊断系统：输入故障 URL，自动跑完 7 步排障 SOP，输出可直接汇报的诊断报告 | 产品设计 · 开发 · 评测 | [fault-detect-system](https://github.com/KFLuv/FaultDetect) |
 | **人力招聘归档系统** | 招聘全流程数字化：让流程不靠人记、权限不靠自觉、误删可撤回 | 需求设计 · 功能验收 | [recruit-system](https://github.com/KFLuv/recruit-system) |
-| **AI 旅游助手** | 能对话规划行程、并把每件旅行资产沉淀下来的 AI 管家：**多会话 Agent**（30 个工具）+ 行程版本回退 + GPS 现场向导 | Agent 设计 · 产品设计 · 开发 | [ai-travel-assistant](https://github.com/KFLuv/ai-travel-assistant) |
+| **AI 旅游助手** | 能对话规划行程、并把每件旅行资产沉淀下来的 AI 管家：**多会话 Agent**（30 个工具）+ 行程版本回退 + GPS 现场向导 | Agent 设计 · 产品设计 · 开发 | [ai-travel-assistant](https://github.com/KFLuv/LTing-TripAgent) |
 
 ### 产品设计项目（交互原型齐全）
 

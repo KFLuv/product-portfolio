@@ -1,7 +1,7 @@
 # FaultDetect · 目录说明
 
 > 现场排障 AI 诊断系统（Java 版 v2.0）
-> 源码：https://github.com/KFLuv/fault-detect-system
+> 源码：https://github.com/KFLuv/FaultDetect
 
 ---
 
@@ -10,7 +10,7 @@
 | 文件 | 类型 | 说明 |
 |---|---|---|
 | [`产品文档.md`](产品文档.md) | 产品文档 | 定位、用户场景、**6 个核心产品决策**、评测体系、**已知缺陷** |
-| [`PRD.md`](https://github.com/KFLuv/fault-detect-system/blob/main/docs/PRD.md) | 产品需求文档 | 背景与问题、指标口径、范围（含明确不做）、功能需求 FR 表与验收标准 |
+| [`PRD.md`](https://github.com/KFLuv/FaultDetect/blob/main/docs/PRD.md) | 产品需求文档 | 背景与问题、指标口径、范围（含明确不做）、功能需求 FR 表与验收标准 |
 | [`设计文档.md`](设计文档.md) | 技术文档 | 系统架构、数据模型、核心流程（7 步 SOP / 差分实验 / 自检 / LLM 层）、接口设计、**风险分级** |
 | [`评测报告.md`](评测报告.md) | 评测文档 | 评测设计、**8 条真值用例实测结果**、**7/8 口径说明**、Badcase 闭环 |
 | [`产品决策记录.md`](产品决策记录.md) | 决策记录 | 我自己的 6 个决策 + **从朋友开源项目提炼的六套方法** + 反向学习 |
